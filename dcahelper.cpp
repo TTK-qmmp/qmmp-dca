@@ -1,34 +1,16 @@
-/* =================================================
- * This file is part of the TTK qmmp plugin project
- * Copyright (C) 2015 - 2020 Greedysky Studio
-
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
-
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
-
- * You should have received a copy of the GNU General Public License along
- * with this program; If not, see <http://www.gnu.org/licenses/>.
- ================================================= */
-
 #include "dcahelper.h"
 
 #ifdef WORDS_BIGENDIAN
 #define s16_LE(s16,channels) s16_swap (s16, channels)
-#define s16_BE(s16,channels) do {} while (0)
+#define s16_BE(s16,channels) do {} while(0)
 #define s32_LE(s32,channels) s32_swap (s32, channels)
-#define s32_BE(s32,channels) do {} while (0)
+#define s32_BE(s32,channels) do {} while(0)
 #define u32_LE(u32) ((((u32)&0xff000000)>>24)|(((u32)&0x00ff0000)>>8)|(((u32)&0x0000ff00)<<8)|(((u32)&0x000000ff)<<24))
 #define u16_LE(u16) ((((u16)&0xff00)>>8)|(((u16)&0x00ff)<<8))
 #else
-#define s16_LE(s16,channels) do {} while (0)
+#define s16_LE(s16,channels) do {} while(0)
 #define s16_BE(s16,channels) s16_swap(s16, channels)
-#define s32_LE(s32,channels) do {} while (0)
+#define s32_LE(s32,channels) do {} while(0)
 #define s32_BE(s32,channels) s32_swap(s32, channels)
 #define u32_LE(u32) (u32)
 #define u16_LE(u16) (u16)
@@ -180,6 +162,7 @@ int dts_open_wav(FILE *fp, wavfmt_t *fmt, int64_t *totalsamples)
     {
         return -1;
     }
+
     datasize = u32_LE(datasize);
     *totalsamples = datasize / ((fmt->wBitsPerSample >> 3) * fmt->nChannels);
 
@@ -269,7 +252,7 @@ int dca_decode_data(dca_info_t *ddb_state, uint8_t * start, int size, int probe)
                 }
 
                 level = (level_t)(level * ddb_state->gain);
-                if(dca_frame (ddb_state->state, ddb_state->buf, &ddb_state->flags, &level, bias))
+                if(dca_frame(ddb_state->state, ddb_state->buf, &ddb_state->flags, &level, bias))
                 {
                     goto error;
                 }
@@ -303,10 +286,9 @@ error:
 
 
 DCAHelper::DCAHelper(const QString &path)
+    : m_path(path)
 {
-    m_path = path;
     m_info = (dca_info_t*)calloc(sizeof(dca_info_t), 1);
-    m_totalTime = 0;
 }
 
 DCAHelper::~DCAHelper()
@@ -332,9 +314,10 @@ void DCAHelper::close()
 
 bool DCAHelper::initialize()
 {
-    m_info->file = stdio_open(m_path.toLocal8Bit().constData());
+    m_info->file = stdio_open(qPrintable(m_path));
     if(!m_info->file)
     {
+        qWarning("DCAHelper: open file failed");
         return false;
     }
 
@@ -352,7 +335,7 @@ bool DCAHelper::initialize()
         m_info->bits_per_sample = fmt.wBitsPerSample;
         m_info->channels = fmt.nChannels;
         m_info->sample_rate = fmt.nSamplesPerSec;
-        m_totalTime = (float)totalsamples / fmt.nSamplesPerSec;
+        m_totalTime = (float)totalsamples / fmt.nSamplesPerSec * 1000;
     }
 
     m_info->gain = 1;
@@ -362,14 +345,16 @@ bool DCAHelper::initialize()
 
     if(!m_info->state)
     {
+        qWarning("DCAHelper: dts_open_wav get state error");
         return false;
     }
 
     // prebuffer 1st piece, and get decoded samplerate and nchannels
     size_t rd = stdio_read(m_info->inbuf, 1, BUFFER_SIZE, m_info->file);
-    int len = dca_decode_data(m_info, m_info->inbuf, rd, 1);
+    const int len = dca_decode_data(m_info, m_info->inbuf, rd, 1);
     if(!len)
     {
+        qWarning("DCAHelper: dca_decode_data error");
         return false;
     }
     m_info->frame_byte_size = len;
@@ -378,7 +363,7 @@ bool DCAHelper::initialize()
     switch(flags)
     {
     case DCA_MONO:
-        qDebug("dts: mono\n");
+        qDebug("DCAHelper: mono");
         m_info->channels = 1;
         break;
     case DCA_CHANNEL:
@@ -386,38 +371,38 @@ bool DCAHelper::initialize()
     case DCA_DOLBY:
     case DCA_STEREO_SUMDIFF:
     case DCA_STEREO_TOTAL:
-        qDebug("dts: stereo\n");
+        qDebug("DCAHelper: stereo");
         m_info->channels = 2;
         break;
     case DCA_3F:
     case DCA_2F1R:
-        qDebug("dts: 3F or 2F1R\n");
+        qDebug("DCAHelper: 3F or 2F1R");
         m_info->channels = 3;
         break;
     case DCA_2F2R:
     case DCA_3F1R:
-        qDebug("dts: 2F2R or 3F1R\n");
+        qDebug("DCAHelper: 2F2R or 3F1R");
         m_info->channels = 4;
         break;
     case DCA_3F2R:
-        qDebug("dts: 3F2R\n");
+        qDebug("DCAHelper: 3F2R");
         m_info->channels = 5;
         break;
     case DCA_4F2R:
-        qDebug("dts: 4F2R\n");
+        qDebug("DCAHelper: 4F2R");
         m_info->channels = 6;
         break;
     }
 
     if(m_info->flags & DCA_LFE)
     {
-        qDebug("dts: LFE\n");
+        qDebug("DCAHelper: LFE");
         m_info->channels++;
     }
 
     if(!m_info->channels)
     {
-        qDebug("dts: invalid numchannels\n");
+        qWarning("DCAHelper: dts invalid numchannels");
         return false;
     }
 
@@ -425,7 +410,7 @@ bool DCAHelper::initialize()
     if(m_totalTime <= 0)
     {
         totalsamples = stdio_length(m_info->file) / len * m_info->frame_length;
-        m_totalTime = (float)totalsamples / m_info->sample_rate;
+        m_totalTime = (float)totalsamples / m_info->sample_rate * 1000;
     }
 
     m_info->startsample = 0;
@@ -441,7 +426,7 @@ int DCAHelper::totalTime() const
 
 void DCAHelper::seek(qint64 time)
 {
-    int sample = time * samplerate();
+    int sample = time * sampleRate() / 1000;
     // calculate file offset from framesize / framesamples
     sample += m_info->startsample;
     int64_t nframe = sample / m_info->frame_length;
@@ -452,15 +437,14 @@ void DCAHelper::seek(qint64 time)
     m_info->samples_to_skip = (int)(sample - nframe * m_info->frame_length);
 
     m_info->currentsample = sample;
-    m_info->readpos = (float)(sample - m_info->startsample) / samplerate();
 }
 
 int DCAHelper::bitrate() const
 {
-    return m_info->bitrate;
+    return m_info->bitrate / 1000;
 }
 
-int DCAHelper::samplerate() const
+int DCAHelper::sampleRate() const
 {
     return m_info->sample_rate;
 }

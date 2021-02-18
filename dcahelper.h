@@ -1,6 +1,6 @@
 /* =================================================
  * This file is part of the TTK qmmp plugin project
- * Copyright (C) 2015 - 2020 Greedysky Studio
+ * Copyright (C) 2015 - 2021 Greedysky Studio
 
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,7 +57,6 @@ typedef struct {
     int endsample;
     int currentsample;
     int samples_to_skip;
-    float readpos;
 } dca_info_t;
 
 /*!
@@ -66,8 +65,8 @@ typedef struct {
 class DCAHelper
 {
 public:
-    DCAHelper(const QString &path);
-    virtual ~DCAHelper();
+    explicit DCAHelper(const QString &path);
+    ~DCAHelper();
 
     void close();
 
@@ -76,7 +75,7 @@ public:
     void seek(qint64 time);
 
     int bitrate() const;
-    int samplerate() const;
+    int sampleRate() const;
     int channels() const;
     int bitsPerSample() const;
 
@@ -85,7 +84,8 @@ public:
 private:
     QString m_path;
     dca_info_t *m_info;
-    qint64 m_totalTime;
+    qint64 m_totalTime = 0;
+
 };
 
 #endif
