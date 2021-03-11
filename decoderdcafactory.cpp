@@ -2,6 +2,8 @@
 #include "decoder_dca.h"
 #include "decoderdcafactory.h"
 
+#include <QMessageBox>
+
 bool DecoderDCAFactory::canDecode(QIODevice *) const
 {
     return false;
@@ -59,4 +61,21 @@ MetaDataModel* DecoderDCAFactory::createMetaDataModel(const QString &path, bool 
     Q_UNUSED(path);
     Q_UNUSED(readOnly);
     return nullptr;
+}
+
+void DecoderDCAFactory::showSettings(QWidget *parent)
+{
+    Q_UNUSED(parent);
+}
+
+void DecoderDCAFactory::showAbout(QWidget *parent)
+{
+    QMessageBox::about (parent, tr("About DCA Reader Plugin"),
+                        tr("Qmmp DCA Reader Plugin")+"\n"+
+                        tr("Written by: Greedysky <greedysky@163.com>"));
+}
+
+QString DecoderDCAFactory::translation() const
+{
+    return QString();
 }
