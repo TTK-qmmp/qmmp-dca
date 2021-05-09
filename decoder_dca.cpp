@@ -20,8 +20,8 @@ bool DecoderDCA::initialize()
         return false;
     }
 
-    int rate = m_dca->sampleRate();
-    int channels = m_dca->channels();
+    const int rate = m_dca->sampleRate();
+    const int channels = m_dca->channels();
     if(rate == 0 || channels == 0)
     {
         qWarning("DecoderDCA: rate or channel invalid");
@@ -29,7 +29,7 @@ bool DecoderDCA::initialize()
     }
 
     configure(rate, channels, Qmmp::PCM_S16LE);
-
+    qDebug("DecoderDCA: initialize succes");
     return true;
 }
 
