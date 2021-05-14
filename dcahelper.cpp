@@ -179,7 +179,7 @@ int16_t convert(int32_t i)
     return (i > 32767) ? 32767 : ((i < -32768) ? -32768 : i);
 }
 
-int convert_samples(dca_info_t *state, int)
+int convert_samples(dca_info *state, int)
 {
     sample_t *samples = dca_samples(state->state);
 
@@ -200,7 +200,7 @@ int convert_samples(dca_info_t *state, int)
     return 0;
 }
 
-int dca_decode_data(dca_info_t *ddb_state, uint8_t * start, int size, int probe)
+int dca_decode_data(dca_info *ddb_state, uint8_t * start, int size, int probe)
 {
     int n_decoded = 0;
     uint8_t * end = start + size;
@@ -288,7 +288,7 @@ error:
 DCAHelper::DCAHelper(const QString &path)
     : m_path(path)
 {
-    m_info = (dca_info_t*)calloc(sizeof(dca_info_t), 1);
+    m_info = (dca_info*)calloc(sizeof(dca_info), 1);
 }
 
 DCAHelper::~DCAHelper()
@@ -335,7 +335,7 @@ bool DCAHelper::initialize()
         m_info->bits_per_sample = fmt.wBitsPerSample;
         m_info->channels = fmt.nChannels;
         m_info->sample_rate = fmt.nSamplesPerSec;
-        m_totalTime = (float)totalsamples / fmt.nSamplesPerSec * 1000;
+        m_info->length = (float)totalsamples / fmt.nSamplesPerSec * 1000;
     }
 
     m_info->gain = 1;
@@ -407,10 +407,10 @@ bool DCAHelper::initialize()
     }
 
     // calculate duration
-    if(m_totalTime <= 0)
+    if(m_info->length <= 0)
     {
         totalsamples = stdio_length(m_info->file) / len * m_info->frame_length;
-        m_totalTime = (float)totalsamples / m_info->sample_rate * 1000;
+        m_info->length = (float)totalsamples / m_info->sample_rate * 1000;
     }
 
     m_info->startsample = 0;
@@ -421,7 +421,7 @@ bool DCAHelper::initialize()
 
 int DCAHelper::totalTime() const
 {
-    return m_totalTime;
+    return m_info->length;
 }
 
 void DCAHelper::seek(qint64 time)

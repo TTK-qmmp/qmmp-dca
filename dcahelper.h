@@ -52,12 +52,12 @@ typedef struct {
     int channels;
     int16_t output_buffer[OUT_BUFFER_SIZE*6]; // output samples
     int remaining;
-
+    int length;
     int startsample;
     int endsample;
     int currentsample;
     int samples_to_skip;
-} dca_info_t;
+} dca_info;
 
 /*!
  * @author Greedysky <greedysky@163.com>
@@ -83,8 +83,7 @@ public:
 
 private:
     QString m_path;
-    dca_info_t *m_info;
-    qint64 m_totalTime = 0;
+    dca_info *m_info;
 
 };
 
