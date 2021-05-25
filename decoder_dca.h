@@ -40,8 +40,8 @@ public:
     virtual void seek(qint64 time) override;
 
 private:
-    DCAHelper* m_dca;
+    DCAHelper* m_helper;
 
 };
 
-#endif // DECODER_DCA_H
+#endif
