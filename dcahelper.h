@@ -22,9 +22,9 @@
 #include <QObject>
 
 extern "C" {
-#include "dca.h"
-#include "gettimeofday.h"
-#include "stdio_file.h"
+#include <libdca/dca.h>
+#include <libdca/gettimeofday.h>
+#include <stdio_file.h>
 }
 
 #define BUFFER_SIZE 24576
@@ -35,7 +35,7 @@ extern "C" {
 typedef struct {
     FILE *file;
     int offset;
-    dca_state_t * state;
+    dca_state_t *state;
     int disable_adjust;// = 0;
     float gain;// = 1;
     int disable_dynrng;// = 0;
@@ -53,11 +53,11 @@ typedef struct {
     int16_t output_buffer[OUT_BUFFER_SIZE*6]; // output samples
     int remaining;
     int length;
-    int startsample;
-    int endsample;
-    int currentsample;
+    int start_sample;
+    int end_sample;
+    int current_sample;
     int samples_to_skip;
-} dca_info;
+} decode_info;
 
 /*!
  * @author Greedysky <greedysky@163.com>
@@ -83,7 +83,7 @@ public:
 
 private:
     QString m_path;
-    dca_info *m_info;
+    decode_info *m_info;
 
 };
 
