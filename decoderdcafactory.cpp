@@ -1,6 +1,6 @@
+#include "decoderdcafactory.h"
 #include "dcahelper.h"
 #include "decoder_dca.h"
-#include "decoderdcafactory.h"
 
 #include <QMessageBox>
 
@@ -12,11 +12,10 @@ bool DecoderDCAFactory::canDecode(QIODevice *) const
 DecoderProperties DecoderDCAFactory::properties() const
 {
     DecoderProperties properties;
-    properties.name = "DTS Plugin";
+    properties.name = tr("DTS Plugin");
     properties.shortName = "dca";
     properties.filters << "*.dts" << "*.cpt";
     properties.description = "DTS Coherent Acoustics Audio File";
-    properties.protocols << "file";
     properties.noInput = true;
     return properties;
 }
@@ -30,7 +29,6 @@ Decoder *DecoderDCAFactory::create(const QString &path, QIODevice *input)
 QList<TrackInfo*> DecoderDCAFactory::createPlayList(const QString &path, TrackInfo::Parts parts, QStringList *)
 {
     TrackInfo *info = new TrackInfo(path);
-
     if(parts == TrackInfo::Parts())
     {
         return QList<TrackInfo*>() << info;
@@ -48,11 +46,10 @@ QList<TrackInfo*> DecoderDCAFactory::createPlayList(const QString &path, TrackIn
         info->setValue(Qmmp::BITRATE, helper.bitrate());
         info->setValue(Qmmp::SAMPLERATE, helper.sampleRate());
         info->setValue(Qmmp::CHANNELS, helper.channels());
-        info->setValue(Qmmp::BITS_PER_SAMPLE, helper.bitsPerSample());
+        info->setValue(Qmmp::BITS_PER_SAMPLE, helper.depth());
         info->setValue(Qmmp::FORMAT_NAME, "DTS");
         info->setDuration(helper.totalTime());
     }
-
     return QList<TrackInfo*>() << info;
 }
 

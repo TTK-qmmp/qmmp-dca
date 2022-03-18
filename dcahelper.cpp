@@ -1,5 +1,7 @@
 #include "dcahelper.h"
 
+#include <qmmp/qmmp.h>
+
 #ifdef WORDS_BIGENDIAN
 #  define s16_LE(s16,channels) s16_swap (s16, channels)
 #  define s16_BE(s16,channels) do {} while(0)
@@ -66,7 +68,8 @@ int channel_remap[][7] = {
     {1,2,5,3,4,6,7} // FL|FR|LFE|FLC|FRC|RL|RR
 };
 
-typedef struct {
+typedef struct
+{
     uint16_t wFormatTag;
     uint16_t nChannels;
     uint32_t nSamplesPerSec;
@@ -415,13 +418,7 @@ bool DCAHelper::initialize()
 
     m_info->start_sample = 0;
     m_info->end_sample = total - 1;
-
     return true;
-}
-
-qint64 DCAHelper::totalTime() const
-{
-    return m_info->length;
 }
 
 void DCAHelper::seek(qint64 time)
@@ -438,29 +435,9 @@ void DCAHelper::seek(qint64 time)
     m_info->current_sample = sample;
 }
 
-int DCAHelper::bitrate() const
-{
-    return m_info->bitrate / 1000;
-}
-
-int DCAHelper::sampleRate() const
-{
-    return m_info->sample_rate;
-}
-
-int DCAHelper::channels() const
-{
-    return m_info->channels;
-}
-
-int DCAHelper::bitsPerSample() const
-{
-    return m_info->bits_per_sample;
-}
-
 qint64 DCAHelper::read(unsigned char *data, qint64 maxSize)
 {
-    const int sampleSize = channels() * bitsPerSample() / 8;
+    const int sampleSize = channels() * depth() / 8;
     if(m_info->end_sample >= 0)
     {
         if(m_info->current_sample + maxSize / sampleSize > m_info->end_sample)
@@ -538,6 +515,5 @@ qint64 DCAHelper::read(unsigned char *data, qint64 maxSize)
     }
 
     m_info->current_sample += (initSize - maxSize) / sampleSize;
-
     return initSize - maxSize;
 }
