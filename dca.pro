@@ -1,4 +1,4 @@
-include(../../plugins.pri)
+include($$PWD/../../plugins.pri)
 include($$PWD/common/common.pri)
 
 TARGET = $$PLUGINS_PREFIX/Input/dca

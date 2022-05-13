@@ -4,9 +4,16 @@
 
 #include <QMessageBox>
 
-bool DecoderDCAFactory::canDecode(QIODevice *) const
+bool DecoderDCAFactory::canDecode(QIODevice *input) const
 {
-    return false;
+    QFile *file = static_cast<QFile*>(input);
+    if(!file)
+    {
+        return false;
+    }
+
+    DCAHelper helper(file->fileName());
+    return helper.initialize();
 }
 
 DecoderProperties DecoderDCAFactory::properties() const
@@ -16,6 +23,7 @@ DecoderProperties DecoderDCAFactory::properties() const
     properties.shortName = "dca";
     properties.filters << "*.dts" << "*.cpt";
     properties.description = "DTS Coherent Acoustics Audio File";
+    properties.protocols << "file";
     properties.noInput = true;
     return properties;
 }
@@ -47,7 +55,7 @@ QList<TrackInfo*> DecoderDCAFactory::createPlayList(const QString &path, TrackIn
         info->setValue(Qmmp::SAMPLERATE, helper.sampleRate());
         info->setValue(Qmmp::CHANNELS, helper.channels());
         info->setValue(Qmmp::BITS_PER_SAMPLE, helper.depth());
-        info->setValue(Qmmp::FORMAT_NAME, "DTS");
+        info->setValue(Qmmp::FORMAT_NAME, "DTS Audio");
         info->setDuration(helper.totalTime());
     }
     return QList<TrackInfo*>() << info;

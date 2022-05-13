@@ -18,7 +18,7 @@
 #  define u16_LE(u16) (u16)
 #endif
 
-int channel_remap[][7] = {
+static int channel_remap[][7] = {
 // DCA_MONO
     {0},
 // DCA_CHANNEL
@@ -68,7 +68,7 @@ int channel_remap[][7] = {
     {1,2,5,3,4,6,7} // FL|FR|LFE|FLC|FRC|RL|RR
 };
 
-typedef struct
+struct wavfmt_t
 {
     uint16_t wFormatTag;
     uint16_t nChannels;
@@ -77,9 +77,9 @@ typedef struct
     uint16_t nBlockAlign;
     uint16_t wBitsPerSample;
     uint16_t cbSize;
-} wavfmt_t;
+};
 
-int dts_open_wav(FILE *fp, wavfmt_t *fmt, int64_t *totalsamples)
+static int dts_open_wav(FILE *fp, wavfmt_t *fmt, int64_t *totalsamples)
 {
     char riff[4];
     if(stdio_read(&riff, 1, sizeof(riff), fp) != sizeof(riff))
@@ -172,7 +172,7 @@ int dts_open_wav(FILE *fp, wavfmt_t *fmt, int64_t *totalsamples)
     return stdio_tell(fp);
 }
 
-int16_t convert(int32_t i)
+static int16_t convert(int32_t i)
 {
 #ifdef LIBDCA_FIXED
     i >>= 15;
@@ -182,7 +182,7 @@ int16_t convert(int32_t i)
     return (i > 32767) ? 32767 : ((i < -32768) ? -32768 : i);
 }
 
-int convert_samples(decode_info *state, int)
+static int convert_samples(decode_info *state, int)
 {
     sample_t *samples = dca_samples(state->state);
 
@@ -190,9 +190,9 @@ int convert_samples(decode_info *state, int)
     n = 256;
     int16_t *dst = state->output_buffer + state->remaining * state->channels;
 
-    for(i = 0; i < n; i++)
+    for(i = 0; i < n; ++i)
     {
-        for(c = 0; c < state->channels; c++)
+        for(c = 0; c < state->channels; ++c)
         {
             *dst++ = convert(*((int32_t*)(samples + 256 * c)));
         }
@@ -203,10 +203,10 @@ int convert_samples(decode_info *state, int)
     return 0;
 }
 
-int dca_decode_data(decode_info *ddb_state, uint8_t * start, int size, int probe)
+static int dca_decode_data(decode_info *ddb_state, uint8_t *start, int size, int probe)
 {
     int n_decoded = 0;
-    uint8_t * end = start + size;
+    uint8_t *end = start + size;
     int len;
 
     while(true)
@@ -233,7 +233,7 @@ int dca_decode_data(decode_info *ddb_state, uint8_t * start, int size, int probe
                 int length = dca_syncinfo(ddb_state->state, ddb_state->buf, &ddb_state->flags, &ddb_state->sample_rate, &ddb_state->bitrate, &ddb_state->frame_length);
                 if(!length)
                 {
-                    for(ddb_state->bufptr = ddb_state->buf; ddb_state->bufptr < ddb_state->buf + HEADER_SIZE-1; ddb_state->bufptr++)
+                    for(ddb_state->bufptr = ddb_state->buf; ddb_state->bufptr < ddb_state->buf + HEADER_SIZE-1; ++ddb_state->bufptr)
                     {
                         ddb_state->bufptr[0] = ddb_state->bufptr[1];
                     }
@@ -265,7 +265,7 @@ int dca_decode_data(decode_info *ddb_state, uint8_t * start, int size, int probe
                     dca_dynrng(ddb_state->state, nullptr, nullptr);
                 }
 
-                for(int i = 0; i < dca_blocks_num(ddb_state->state); i++)
+                for(int i = 0; i < dca_blocks_num(ddb_state->state); ++i)
                 {
                     if(dca_block(ddb_state->state))
                     {
@@ -484,9 +484,9 @@ qint64 DCAHelper::read(unsigned char *data, qint64 maxSize)
 
                 // remap channels
                 char *in = (char *)m_info->output_buffer;
-                for(int s = 0; s < n; s++)
+                for(int s = 0; s < n; ++s)
                 {
-                    for(int i = 0; i < channels(); i++)
+                    for(int i = 0; i < channels(); ++i)
                     {
                         ((int16_t *)data)[i] = ((int16_t*)in)[channel_remap[chmap][i]];
                     }
