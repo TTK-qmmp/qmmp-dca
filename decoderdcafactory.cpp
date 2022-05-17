@@ -25,6 +25,7 @@ DecoderProperties DecoderDCAFactory::properties() const
     properties.description = "DTS Coherent Acoustics Audio File";
     properties.protocols << "file";
     properties.noInput = true;
+    properties.hasAbout = true;
     return properties;
 }
 
