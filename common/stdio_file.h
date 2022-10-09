@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License along
  * with this program; If not, see <http://www.gnu.org/licenses/>.
  ***************************************************************************/
- 
+
 #ifndef STDIO_FILE_H
 #define STDIO_FILE_H
 
@@ -37,10 +37,10 @@ FILE * stdio_open(const char *fname);
 void stdio_close(FILE *stream);
 size_t stdio_read(void *ptr, size_t size, size_t nmemb, FILE *stream);
 int stdio_seek(FILE *stream, int64_t offset, int whence);
-int64_t stdio_tell(FILE *stream) ;
+int64_t stdio_tell(FILE *stream);
 void stdio_rewind(FILE *stream);
 int64_t stdio_length(FILE *stream);
 int stdio_get_leading_size(FILE *stream);
 ///
 
-#endif //STDIO_FILE_H
+#endif
