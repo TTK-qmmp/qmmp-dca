@@ -1059,8 +1059,9 @@ int dca_block (dca_state_t * state)
     /* Sanity check */
     if (state->current_subframe >= state->subframes)
     {
-        fprintf (stderr, "check failed: %i>%i",
-                 state->current_subframe, state->subframes);
+#ifdef DEBUG
+        fprintf (stderr, "check failed: %i>%i", state->current_subframe, state->subframes);
+#endif
         return -1;
     }
 
