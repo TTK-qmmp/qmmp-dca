@@ -20,9 +20,9 @@
 #define STDIO_FILE_H
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
-#include <malloc.h>
 
 #ifndef	MIN
 #define MIN(x, y) ((x) < (y) ? (x) : (y))

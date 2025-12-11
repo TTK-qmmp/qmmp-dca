@@ -1,5 +1,5 @@
 
-INCLUDEPATH += $$PWD/
+INCLUDEPATH += $$PWD
 
 HEADERS += $$PWD/stdio_file.h
 
