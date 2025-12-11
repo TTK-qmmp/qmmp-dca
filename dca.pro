@@ -21,8 +21,6 @@ SOURCES += decoderdcafactory.cpp \
            libdca/downmix.c \
            libdca/bitstream.c
 
-INCLUDEPATH += $$PWD/libdca
-
 #CONFIG += BUILD_PLUGIN_INSIDE
 contains(CONFIG, BUILD_PLUGIN_INSIDE){
     include($$PWD/../../plugins.pri)
