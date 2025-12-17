@@ -1,5 +1,6 @@
 This is a plugin for Qmmp (1.6.0 or greater) which supports DTS file.
-(DTS Coherent Acoustics Audio File)
+
+Based on [DTS](https://github.com/DeaDBeeF-Player/deadbeef/tree/master/plugins/dca) (DTS coherent acoustics audio module).
 
 The following packages are required, including development headers,
 which some vendors split into separate packages:

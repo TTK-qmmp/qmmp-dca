@@ -86,7 +86,8 @@ void DecoderDCAFactory::showAbout(QWidget *parent)
 {
     QMessageBox::about(parent, tr("About DCA Reader Plugin"),
                        tr("Qmmp DCA Reader Plugin") + "\n" +
-                       tr("Written by: Greedysky <greedysky@163.com>"));
+                       tr("Written by: Greedysky <greedysky@163.com>") + "\n" +
+                       tr("Based on the source code from the DTS"));
 }
 
 QString DecoderDCAFactory::translation() const
