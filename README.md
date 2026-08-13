@@ -1,4 +1,4 @@
-This is a plugin for Qmmp (1.6.0 or greater) which supports DTS file.
+This is an inut plugin for Qmmp (1.6.0 or later) that supports DTS files.
 
 Based on [DTS](https://github.com/DeaDBeeF-Player/deadbeef/tree/master/plugins/dca) (DTS coherent acoustics audio module).
 
